@@ -1,5 +1,4 @@
 package com.webSpringProje.Swiftwheels.Config;
-
 import com.webSpringProje.Swiftwheels.Services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
