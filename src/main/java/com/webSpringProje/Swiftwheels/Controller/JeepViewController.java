@@ -48,4 +48,22 @@ public class JeepViewController {
         model.addAttribute("jeeps", jeepData);
         return "jeep_list";  // jeep_list.html dosyasını gösterecek
     }
+    // JeepViewController.java içine ekle
+
+    @GetMapping("/jeeps/{id}")
+    public String jeepDetail(@PathVariable Long id, Model model) {
+        Jeep jeep = jeepService.getJeepById(id);
+        model.addAttribute("jeep", jeep);
+
+        if (jeep.getImage() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(jeep.getImage());
+            model.addAttribute("jeepImage", base64Image);
+        } else {
+            model.addAttribute("jeepImage", null);
+        }
+
+        return "jeep_detail";
+    }
+
+
 }

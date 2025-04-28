@@ -50,4 +50,18 @@ public class CarViewController {
         model.addAttribute("cars", carData);
         return "car_list";
     }
+    @GetMapping("/cars/{id}")
+    public String carDetail(@PathVariable Long id, Model model) {
+        Car car = carService.getCarById(id);
+        model.addAttribute("car", car);
+
+        if (car.getImage() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(car.getImage());
+            model.addAttribute("carImage", base64Image);
+        } else {
+            model.addAttribute("carImage", null);
+        }
+
+        return "car_detail";
+    }
 }

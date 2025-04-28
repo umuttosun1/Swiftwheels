@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Araba Detay - SwiftWheels</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    header {
+      background-color: #4C9398;
+    }
+    .nav-link {
+      color: white !important;
+    }
+    .nav-link.active {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    .detail-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      margin-top: 40px;
+    }
+    .detail-image {
+      width: 50%;
+      object-fit: cover;
+      background-color: #f8f9fa;
+    }
+    .detail-info {
+      padding: 30px;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .rent-button {
+      align-self: flex-end;
+    }
+    .vehicle-image {
+      max-width: 100%;
+      max-height: 400px; /* yüksekliği sınırla */
+      width: auto;
+      height: auto;
+      display: block;
+      margin: 0 auto; /* ortala */
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="p-3 mb-3 border-bottom">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+        <span class="fs-4 fw-bold">SwiftWheels</span>
+      </a>
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-4">
+        <li><a href="/cars" class="nav-link px-2">Arabalar</a></li>
+        <li><a href="/motors" class="nav-link px-2">Motorlar</a></li>
+        <li><a href="/jeeps" class="nav-link px-2">Jeepler</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- İçerik -->
+<main class="container">
+
+  <div class="detail-card">
+
+    <!-- Sol: Araç Görseli -->
+    <div class="p-0">
+      <img th:if="${carImage != null}" th:src="'data:image/jpeg;base64,' + ${carImage}" alt="Araç Görseli" class="img-fluid vehicle-image">
+
+    </div>
+
+    <!-- Sağ: Araç Bilgileri -->
+    <div class="detail-info">
+      <div>
+        <h2 th:text="${car.make + ' ' + car.model}">Marka Model</h2>
+        <p><strong>Yıl:</strong> <span th:text="${car.year}"></span></p>
+        <p><strong>KM:</strong> <span th:text="${car.km}"></span></p>
+        <p><strong>Renk:</strong> <span th:text="${car.color}"></span></p>
+        <p><strong>Motor Gücü:</strong> <span th:text="${car.enginePower}"></span></p>
+        <p><strong>Motor Hacmi:</strong> <span th:text="${car.engineCapacity}"></span></p>
+        <p><strong>Fiyat:</strong> <span th:text="${car.price} + ' ₺'"></span></p>
+        <p><strong>Stok:</strong> <span th:text="${car.stock}"></span></p>
+        <p><strong>Seri:</strong> <span th:text="${car.seri}"></span></p>
+        <p><strong>Yakıt Türü:</strong> <span th:text="${car.fuel}"></span></p>
+      </div>
+
+      <!-- Kirala Butonu -->
+      <div class="rent-button">
+        <a href="#" class="btn btn-success">Aracı Kirala</a>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

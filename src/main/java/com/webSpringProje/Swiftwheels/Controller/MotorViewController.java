@@ -48,4 +48,23 @@ public class MotorViewController {
         model.addAttribute("motors", motorData);
         return "motor_list";  // motor_list.html dosyasını gösterecek
     }
+
+    // MotorViewController.java içine ekle
+
+    @GetMapping("/motors/{id}")
+    public String motorDetail(@PathVariable Long id, Model model) {
+        Motor motor = motorService.getMotorById(id);
+        model.addAttribute("motor", motor);
+
+        if (motor.getImage() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(motor.getImage());
+            model.addAttribute("motorImage", base64Image);
+        } else {
+            model.addAttribute("motorImage", null);
+        }
+
+        return "motor_detail";
+    }
+
+
 }

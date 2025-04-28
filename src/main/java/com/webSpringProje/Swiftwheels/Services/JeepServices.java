@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class JeepServices {
@@ -27,4 +28,12 @@ public class JeepServices {
     public List<Jeep> getAllJeeps() {
         return jeepRepository.findAll();
     }
+
+    // JeepServices.java içine ekle
+
+    public Jeep getJeepById(Long id) {
+        return jeepRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Jeep bulunamadı: ID " + id));
+    }
+
 }

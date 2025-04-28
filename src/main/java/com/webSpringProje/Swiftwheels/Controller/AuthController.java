@@ -47,9 +47,9 @@ public class AuthController {
         return "redirect:/login?registerSuccess";
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/homepage")
     public String profilePage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         model.addAttribute("email", userDetails.getUsername());
-        return "profile";
+        return "homepage";
     }
 }
