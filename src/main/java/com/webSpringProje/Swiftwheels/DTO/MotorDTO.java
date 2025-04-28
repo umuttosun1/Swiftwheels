@@ -1,15 +1,8 @@
-package com.webSpringProje.Swiftwheels.Entity;
+package com.webSpringProje.Swiftwheels.DTO;
 
-import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED) // tablo yapına göre JOINED en uygunu
-@DiscriminatorColumn(name = "vehicle_type")
-public abstract class Vehicle {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class MotorDTO {
     private String make;
     private String model;
     private Integer year;
@@ -19,15 +12,12 @@ public abstract class Vehicle {
     private String engineCapacity;
     private Integer price;
     private Integer stock;
-    @Lob
-    @Column(name = "image", columnDefinition = "LONGBLOB")
-    private byte[] image;
+    private String type;
+    private String cooling;
+    private String cylinder;
+    private MultipartFile image;
 
-    public Vehicle() {
-    }
-
-    public Vehicle(Long id, String make, String model, Integer year, Integer km, String color, String enginePower, String engineCapacity, Integer price, Integer stock, byte[] image) {
-        this.id = id;
+    public MotorDTO(String make, String model, Integer year, Integer km, String color, String enginePower, String engineCapacity, Integer price, Integer stock, String type, String cooling, String cylinder, MultipartFile image) {
         this.make = make;
         this.model = model;
         this.year = year;
@@ -37,15 +27,13 @@ public abstract class Vehicle {
         this.engineCapacity = engineCapacity;
         this.price = price;
         this.stock = stock;
+        this.type = type;
+        this.cooling = cooling;
+        this.cylinder = cylinder;
         this.image = image;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public MotorDTO() {
     }
 
     public String getMake() {
@@ -120,11 +108,35 @@ public abstract class Vehicle {
         this.stock = stock;
     }
 
-    public byte[] getImage() {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCooling() {
+        return cooling;
+    }
+
+    public void setCooling(String cooling) {
+        this.cooling = cooling;
+    }
+
+    public String getCylinder() {
+        return cylinder;
+    }
+
+    public void setCylinder(String cylinder) {
+        this.cylinder = cylinder;
+    }
+
+    public MultipartFile getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(MultipartFile image) {
         this.image = image;
     }
 }

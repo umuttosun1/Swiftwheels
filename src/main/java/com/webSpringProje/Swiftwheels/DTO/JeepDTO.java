@@ -1,15 +1,8 @@
-package com.webSpringProje.Swiftwheels.Entity;
+package com.webSpringProje.Swiftwheels.DTO;
 
-import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED) // tablo yapına göre JOINED en uygunu
-@DiscriminatorColumn(name = "vehicle_type")
-public abstract class Vehicle {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class JeepDTO {
     private String make;
     private String model;
     private Integer year;
@@ -19,15 +12,14 @@ public abstract class Vehicle {
     private String engineCapacity;
     private Integer price;
     private Integer stock;
-    @Lob
-    @Column(name = "image", columnDefinition = "LONGBLOB")
-    private byte[] image;
 
-    public Vehicle() {
-    }
+    private String seri;
+    private String fuel;
+    private String traction;
 
-    public Vehicle(Long id, String make, String model, Integer year, Integer km, String color, String enginePower, String engineCapacity, Integer price, Integer stock, byte[] image) {
-        this.id = id;
+    private MultipartFile image;
+
+    public JeepDTO(String make, String model, Integer year, Integer km, String color, String enginePower, String engineCapacity, Integer price, Integer stock, String seri, String fuel, String traction, MultipartFile image) {
         this.make = make;
         this.model = model;
         this.year = year;
@@ -37,15 +29,13 @@ public abstract class Vehicle {
         this.engineCapacity = engineCapacity;
         this.price = price;
         this.stock = stock;
+        this.seri = seri;
+        this.fuel = fuel;
+        this.traction = traction;
         this.image = image;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public JeepDTO() {
     }
 
     public String getMake() {
@@ -120,11 +110,35 @@ public abstract class Vehicle {
         this.stock = stock;
     }
 
-    public byte[] getImage() {
+    public String getSeri() {
+        return seri;
+    }
+
+    public void setSeri(String seri) {
+        this.seri = seri;
+    }
+
+    public String getFuel() {
+        return fuel;
+    }
+
+    public void setFuel(String fuel) {
+        this.fuel = fuel;
+    }
+
+    public String getTraction() {
+        return traction;
+    }
+
+    public void setTraction(String traction) {
+        this.traction = traction;
+    }
+
+    public MultipartFile getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(MultipartFile image) {
         this.image = image;
     }
 }
