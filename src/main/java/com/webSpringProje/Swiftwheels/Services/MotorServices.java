@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class MotorServices {
@@ -27,4 +28,9 @@ public class MotorServices {
     public List<Motor> getAllMotors() {
         return motorRepository.findAll();
     }
+    public Motor getMotorById(Long id) {
+        return motorRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Motor bulunamadı: ID " + id));
+    }
+
 }
