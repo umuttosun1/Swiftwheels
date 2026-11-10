@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Yerel ayarlar ###
+.env
+application-local.properties

@@ -1,69 +1,57 @@
 <!DOCTYPE html>
-<html lang="tr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>SwiftWheels - Ana Sayfa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f5f5f5;
-        }
-        header {
-            background-color: #4C9398;
-        }
-        .nav-link, .link-body-emphasis {
-            color: white !important;
-        }
-        .nav-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Ana sayfa')}"></head>
 <body>
+<nav th:replace="~{fragments/layout :: navbar('home')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
 
-<header class="p-3 mb-3 border-bottom">
-    <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-
-            <!-- Logo ve Marka İsmi -->
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                <span class="fs-4 fw-bold">SwiftWheels</span>
-            </a>
-
-            <!-- Navigation Linkler -->
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-4">
-                <li><a href="/cars" class="nav-link px-2">Arabalar</a></li>
-                <li><a href="/motors" class="nav-link px-2">Motorlar</a></li>
-                <li><a href="/jeeps" class="nav-link px-2">Jeepler</a></li>
-            </ul>
-
-            <!-- Arama Kutusu -->
-            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                <input type="search" class="form-control" placeholder="Ara..." aria-label="Search">
-            </form>
-
-            <!-- Profil Dropdown -->
-            <div class="dropdown text-end">
-                <a href="#" class="d-block text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/umuttosun1.png " alt="Profil" width="32" height="32" class="rounded-circle">
-                </a>
-                <ul class="dropdown-menu text-small">
-                    <li><a class="dropdown-item" href="/profile">Profil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
-                </ul>
-            </div>
-
-        </div>
+<main class="container py-4">
+  <section class="hero mb-4">
+    <div class="position-relative" style="z-index:1; max-width: 560px">
+      <p class="text-uppercase fw-semibold small mb-2" style="letter-spacing:.14em; color:#bdeee3">Unleash your journey</p>
+      <h1 class="display-5 mb-3">Yola çıkmanın en kolay yolu</h1>
+      <p class="lead mb-4">Araba, jeep ya da motor — dakikalar içinde seç, tarihini belirle, kirala.
+        İstediğin zaman profilinden iade et.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-light btn-lg fw-semibold" th:href="@{/cars}"><i class="bi bi-search me-1"></i>Araçlara göz at</a>
+        <a sec:authorize="isAnonymous()" class="btn btn-outline-light btn-lg" th:href="@{/register}">Ücretsiz hesap aç</a>
+        <a sec:authorize="isAuthenticated()" class="btn btn-outline-light btn-lg" th:href="@{/profile}">Kiralamalarım</a>
+      </div>
     </div>
-</header>
+    <img class="hero-img d-none d-md-block" th:if="${hero != null}"
+         th:src="@{'/vehicles/' + ${hero.id} + '/image'}" th:alt="${hero.title}">
+  </section>
 
-<!-- Ana İçerik -->
-<main class="container text-center mt-5">
-    <h1 class="mb-4">SwiftWheels'a Hoşgeldiniz!</h1>
-    <p>İstediğiniz aracı hemen şimdi keşfedin. Arabalar, Motorlar ve Jeepler arasından dilediğinizi seçin!</p>
+  <section class="row g-3 mb-5">
+    <div class="col-md-4" th:each="t : ${vehicleTypes}">
+      <a class="sw-card type-tile h-100" th:href="@{'/' + ${t.path}}">
+        <span class="icon"><i th:class="'bi ' + ${t.icon}"></i></span>
+        <span>
+          <span class="d-block fw-bold" th:text="${t.plural}">Arabalar</span>
+          <span class="meta" th:text="${counts.get(t)} + ' araç'">4 araç</span>
+        </span>
+        <i class="bi bi-chevron-right ms-auto text-muted"></i>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <h2 class="h4 fw-bold mb-0">Şu an müsait</h2>
+      <a th:href="@{/cars}" class="small">Tümünü gör <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-3" th:unless="${featured.isEmpty()}">
+      <div class="col-sm-6 col-lg-4" th:each="v : ${featured}">
+        <div th:replace="~{fragments/layout :: vehicleCard(${v})}"></div>
+      </div>
+    </div>
+    <div class="sw-card p-5 text-center text-muted" th:if="${featured.isEmpty()}">
+      Şu an müsait araç yok.
+    </div>
+  </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>

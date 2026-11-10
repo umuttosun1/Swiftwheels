@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${vehicle.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar(${vehicle.vehicleType.path})}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a th:href="@{'/' + ${vehicle.vehicleType.path}}" th:text="${vehicle.vehicleType.plural}">Arabalar</a></li>
+      <li class="breadcrumb-item active" th:text="${vehicle.title}">Model</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="detail-media">
+        <img th:if="${vehicle.hasImage()}" th:src="@{'/vehicles/' + ${vehicle.id} + '/image'}" th:alt="${vehicle.title}">
+        <i th:unless="${vehicle.hasImage()}" th:class="'bi ' + ${vehicle.vehicleType.icon}" style="font-size:6rem;color:#a9c6c9"></i>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="sw-card p-4 h-100 d-flex flex-column">
+        <span class="badge bg-light text-dark border align-self-start mb-2" th:text="${vehicle.vehicleType.label}">Araba</span>
+        <h1 class="h3 fw-bold mb-1" th:text="${vehicle.title}">Marka Model</h1>
+        <p class="meta mb-3"><span th:text="${vehicle.year}">2022</span> · <span th:text="${vehicle.color}">Gümüş</span></p>
+
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="price fs-2"><span th:text="${#numbers.formatInteger(vehicle.price, 1, 'POINT')} + ' ₺'">1.200 ₺</span> <small>/ gün</small></div>
+          <span class="badge rounded-pill fs-6" th:classappend="${vehicle.stock > 0} ? 'badge-stock' : 'badge-out'"
+                th:text="${vehicle.stock > 0} ? ${vehicle.stock} + ' müsait' : 'Stokta yok'">3 müsait</span>
+        </div>
+
+        <dl class="spec-grid mb-4">
+          <div class="spec"><dt>Kilometre</dt><dd th:text="${#numbers.formatInteger(vehicle.km, 1, 'POINT')} + ' km'">18.500 km</dd></div>
+          <div class="spec" th:if="${vehicle.enginePower}"><dt>Motor gücü</dt><dd th:text="${vehicle.enginePower}">204 HP</dd></div>
+          <div class="spec" th:if="${vehicle.engineCapacity}"><dt>Motor hacmi</dt><dd th:text="${vehicle.engineCapacity}">1.5</dd></div>
+          <div class="spec" th:each="d : ${vehicle.details}"><dt th:text="${d.key}">Yakıt</dt><dd th:text="${d.value}">Benzin</dd></div>
+        </dl>
+
+        <div class="mt-auto">
+          <a th:if="${vehicle.stock > 0}" class="btn btn-primary btn-lg w-100 fw-semibold" th:href="@{'/rent/' + ${vehicle.id}}">
+            <i class="bi bi-calendar-check me-1"></i> Hemen kirala
+          </a>
+          <button th:unless="${vehicle.stock > 0}" class="btn btn-secondary btn-lg w-100" disabled>Şu an stokta yok</button>
+
+          <div sec:authorize="hasRole('ADMIN')" class="d-flex gap-2 mt-3">
+            <a class="btn btn-outline-primary flex-fill" th:href="@{'/' + ${vehicle.vehicleType.path} + '/' + ${vehicle.id} + '/edit'}"><i class="bi bi-pencil"></i> Düzenle</a>
+            <form th:action="@{'/' + ${vehicle.vehicleType.path} + '/' + ${vehicle.id} + '/delete'}" method="post" class="flex-fill"
+                  onsubmit="return confirm('Bu araç silinsin mi?')">
+              <button class="btn btn-outline-danger w-100"><i class="bi bi-trash"></i> Sil</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

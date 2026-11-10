@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${vehicle != null} ? 'Aracı düzenle' : 'Yeni ' + ${type.label})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar(${type.path})}"></nav>
+
+<main class="container py-4" style="max-width: 860px"
+      th:with="editing=${vehicle != null},
+               action=${editing} ? @{'/' + ${type.path} + '/' + ${vehicle.id}} : @{'/' + ${type.path}}">
+  <h1 class="h3 fw-bold mb-1" th:text="${editing} ? ${vehicle.title} + ' · düzenle' : 'Yeni ' + ${type.label.toLowerCase()} + ' ekle'">Yeni araba</h1>
+  <p class="text-muted mb-4" th:text="${type.plural}">Arabalar</p>
+
+  <form class="sw-card p-4" th:action="${action}" th:object="${vehicleForm}" method="post" enctype="multipart/form-data" novalidate>
+    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+
+    <h2 class="h6 text-uppercase text-muted fw-bold mb-3">Genel</h2>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label" for="make">Marka</label>
+        <input id="make" class="form-control" th:field="*{make}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{make}"></div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="model">Model</label>
+        <input id="model" class="form-control" th:field="*{model}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{model}"></div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="year">Yıl</label>
+        <input id="year" type="number" class="form-control" th:field="*{year}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{year}"></div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="km">Kilometre</label>
+        <input id="km" type="number" min="0" class="form-control" th:field="*{km}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{km}"></div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="color">Renk</label>
+        <input id="color" class="form-control" th:field="*{color}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{color}"></div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="enginePower">Motor gücü</label>
+        <input id="enginePower" class="form-control" th:field="*{enginePower}" placeholder="ör. 125 HP" th:errorclass="is-invalid">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="engineCapacity">Motor hacmi</label>
+        <input id="engineCapacity" class="form-control" th:field="*{engineCapacity}" placeholder="ör. 1.5 ya da 649 cc" th:errorclass="is-invalid">
+      </div>
+    </div>
+
+    <h2 class="h6 text-uppercase text-muted fw-bold mb-3" th:text="${type.label} + ' özellikleri'">Araba özellikleri</h2>
+    <div class="row g-3 mb-4">
+      <th:block th:if="${type.name() != 'MOTOR'}">
+        <div class="col-md-4">
+          <label class="form-label" for="seri">Seri</label>
+          <input id="seri" class="form-control" th:field="*{seri}" placeholder="ör. Sedan" th:errorclass="is-invalid">
+          <div class="invalid-feedback" th:errors="*{seri}"></div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="fuel">Yakıt</label>
+          <input id="fuel" class="form-control" th:field="*{fuel}" list="fuels" th:errorclass="is-invalid">
+          <datalist id="fuels"><option>Benzin</option><option>Dizel</option><option>Hibrit</option><option>Elektrik</option><option>LPG</option></datalist>
+          <div class="invalid-feedback" th:errors="*{fuel}"></div>
+        </div>
+        <div class="col-md-4" th:if="${type.name() == 'JEEP'}">
+          <label class="form-label" for="traction">Çekiş</label>
+          <input id="traction" class="form-control" th:field="*{traction}" list="tractions" th:errorclass="is-invalid">
+          <datalist id="tractions"><option>4x2</option><option>4x4</option><option>AWD</option></datalist>
+          <div class="invalid-feedback" th:errors="*{traction}"></div>
+        </div>
+      </th:block>
+      <th:block th:if="${type.name() == 'MOTOR'}">
+        <div class="col-md-4">
+          <label class="form-label" for="motorType">Tip</label>
+          <input id="motorType" class="form-control" th:field="*{motorType}" list="mtypes" th:errorclass="is-invalid">
+          <datalist id="mtypes"><option>Sport</option><option>Naked</option><option>Scooter</option><option>Touring</option><option>Enduro</option></datalist>
+          <div class="invalid-feedback" th:errors="*{motorType}"></div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="cooling">Soğutma</label>
+          <input id="cooling" class="form-control" th:field="*{cooling}" list="coolings" th:errorclass="is-invalid">
+          <datalist id="coolings"><option>Sıvı</option><option>Hava</option><option>Yağ</option></datalist>
+          <div class="invalid-feedback" th:errors="*{cooling}"></div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="cylinder">Silindir</label>
+          <input id="cylinder" class="form-control" th:field="*{cylinder}" th:errorclass="is-invalid">
+        </div>
+      </th:block>
+    </div>
+
+    <h2 class="h6 text-uppercase text-muted fw-bold mb-3">Kiralama</h2>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label" for="price">Günlük fiyat (₺)</label>
+        <input id="price" type="number" min="1" class="form-control" th:field="*{price}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{price}"></div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="stock">Stok</label>
+        <input id="stock" type="number" min="0" class="form-control" th:field="*{stock}" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{stock}"></div>
+      </div>
+    </div>
+
+    <h2 class="h6 text-uppercase text-muted fw-bold mb-3">Fotoğraf</h2>
+    <div class="row g-3 align-items-center mb-4">
+      <div class="col-md-3" th:if="${editing and vehicle.hasImage()}">
+        <img class="img-fluid rounded border bg-light p-1" th:src="@{'/vehicles/' + ${vehicle.id} + '/image'}" alt="">
+      </div>
+      <div class="col">
+        <input type="file" class="form-control" th:field="*{image}" accept="image/png,image/jpeg,image/webp,image/gif" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{image}"></div>
+        <div class="form-text">En fazla 5 MB. <span th:if="${editing}">Boş bırakırsan mevcut fotoğraf kalır.</span></div>
+        <div class="form-check mt-2" th:if="${editing and vehicle.hasImage()}">
+          <input class="form-check-input" type="checkbox" th:field="*{removeImage}" id="removeImage">
+          <label class="form-check-label" for="removeImage">Mevcut fotoğrafı kaldır</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 justify-content-end">
+      <a class="btn btn-light" th:href="${editing} ? @{'/' + ${type.path} + '/' + ${vehicle.id}} : @{'/' + ${type.path}}">Vazgeç</a>
+      <button class="btn btn-primary px-4 fw-semibold" type="submit" th:text="${editing} ? 'Kaydet' : 'Ekle'">Ekle</button>
+    </div>
+  </form>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

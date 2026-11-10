@@ -1,81 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Hesap Aç - SwiftWheels</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f5f5f5;
-    }
-    .logo {
-      background-color: #4C9398;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 24px;
-    }
-    .register-box {
-      margin-top: 40px;
-      padding: 40px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Hesap aç')}"></head>
 <body>
+<nav th:replace="~{fragments/layout :: navbar('register')}"></nav>
 
-<div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
+<main class="container py-5">
+  <div class="mx-auto" style="max-width: 560px">
+    <div class="text-center mb-4">
+      <div class="auth-brand"><i class="bi bi-lightning-charge-fill"></i> SwiftWheels</div>
+      <p class="text-muted mb-0">Ücretsiz hesap aç, hemen kirala</p>
+    </div>
 
-  <div class="logo">
-    SwiftWheels
-  </div>
-
-  <div class="register-box col-md-5">
-
-    <h3 class="text-center mb-4">Hesap Aç</h3>
-
-    <form method="post" th:action="@{/register}">
-
-      <div class="mb-3">
-        <input type="email" class="form-control" placeholder="E-posta adresi" name="email" required>
-      </div>
-
-      <div class="row g-2 mb-3">
-        <div class="col">
-          <input type="text" class="form-control" placeholder="Ad" name="firstName" required>
+    <div class="sw-card p-4">
+      <form method="post" th:action="@{/register}" th:object="${user}" novalidate>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="firstName">Ad</label>
+            <input id="firstName" class="form-control" th:field="*{firstName}" th:errorclass="is-invalid" required>
+            <div class="invalid-feedback" th:errors="*{firstName}"></div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="lastName">Soyad</label>
+            <input id="lastName" class="form-control" th:field="*{lastName}" th:errorclass="is-invalid" required>
+            <div class="invalid-feedback" th:errors="*{lastName}"></div>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="email">E-posta</label>
+            <input id="email" type="email" class="form-control" th:field="*{email}" th:errorclass="is-invalid" placeholder="ornek@mail.com" required>
+            <div class="invalid-feedback" th:errors="*{email}"></div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="birthDate">Doğum tarihi</label>
+            <input id="birthDate" type="date" class="form-control" th:field="*{birthDate}" th:errorclass="is-invalid" required>
+            <div class="invalid-feedback" th:errors="*{birthDate}"></div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="phoneNumber">Telefon</label>
+            <input id="phoneNumber" type="tel" class="form-control" th:field="*{phoneNumber}" th:errorclass="is-invalid" placeholder="05XXXXXXXXX" required>
+            <div class="invalid-feedback" th:errors="*{phoneNumber}"></div>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="password">Şifre</label>
+            <input id="password" type="password" class="form-control" th:field="*{password}" th:errorclass="is-invalid" required minlength="8">
+            <div class="form-text">En az 8 karakter.</div>
+            <div class="invalid-feedback" th:errors="*{password}"></div>
+          </div>
         </div>
-        <div class="col">
-          <input type="text" class="form-control" placeholder="Soyad" name="lastName" required>
-        </div>
-      </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-4">Hesap oluştur</button>
+      </form>
+    </div>
 
-      <div class="mb-3">
-        <input type="password" class="form-control" placeholder="Şifre" name="password" required>
-      </div>
-
-      <div class="mb-3">
-        <input type="text" class="form-control" placeholder="Telefon Numarası" name="phoneNumber" required>
-      </div>
-
-      <div class="mb-3">
-        <input type="date" class="form-control" placeholder="Doğum Tarihi" name="birthDate" required>
-      </div>
-
-      <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary">Hesap Aç</button>
-      </div>
-
-      <div class="text-center">
-        Zaten hesabın var mı? <a href="/login" class="text-primary">Giriş yap</a>
-      </div>
-
-    </form>
-
+    <p class="text-center mt-3 text-muted">Zaten hesabın var mı? <a th:href="@{/login}" class="fw-semibold">Giriş yap</a></p>
   </div>
+</main>
 
-</div>
-
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>

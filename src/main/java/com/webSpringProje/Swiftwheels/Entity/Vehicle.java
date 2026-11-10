@@ -1,10 +1,12 @@
 package com.webSpringProje.Swiftwheels.Entity;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) // tablo yapına göre JOINED en uygunu
-@DiscriminatorColumn(name = "vehicle_type")
+@Inheritance(strategy = InheritanceType.JOINED) // her türün kendi detay tablosu var
 public abstract class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +21,47 @@ public abstract class Vehicle {
     private String engineCapacity;
     private Integer price;
     private Integer stock;
-    @Lob
-    @Column(name = "image", columnDefinition = "LONGBLOB")
+    // VARBINARY + büyük uzunluk: Hibernate bunu PostgreSQL'de bytea, MySQL'de longblob yapar.
+    // (Eski "LONGBLOB" tanımı yalnızca MySQL'de çalışıyordu; LONG32VARBINARY ise
+    //  PostgreSQL sürücüsünde null değer bağlanırken "Geçersiz Types değeri" hatası veriyordu.)
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    @Column(name = "image", length = 10 * 1024 * 1024)
     private byte[] image;
+
+    private String imageContentType;
+
+    /** Adreslerde ve şablonlarda kullanılan tür. */
+    public abstract VehicleType getVehicleType();
+
+    /** Türe özgü alanlar, detay sayfasında gösterilmek üzere (etiket -> değer). */
+    public abstract java.util.Map<String, String> getDetails();
+
+    /** Boş değerleri atlayarak sıralı bir etiket/değer haritası kurar. */
+    protected static java.util.Map<String, String> details(String... labelValuePairs) {
+        java.util.Map<String, String> map = new java.util.LinkedHashMap<>();
+        for (int i = 0; i + 1 < labelValuePairs.length; i += 2) {
+            if (labelValuePairs[i + 1] != null && !labelValuePairs[i + 1].isBlank()) {
+                map.put(labelValuePairs[i], labelValuePairs[i + 1]);
+            }
+        }
+        return map;
+    }
+
+    public boolean hasImage() {
+        return image != null && image.length > 0;
+    }
+
+    public String getTitle() {
+        return make + " " + model;
+    }
+
+    public String getImageContentType() {
+        return imageContentType;
+    }
+
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+    }
 
     public Vehicle() {
     }

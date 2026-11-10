@@ -4,6 +4,16 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Motor extends Vehicle {
+
+    @Override
+    public java.util.Map<String, String> getDetails() {
+        return details("Tip", this.type, "Soğutma", getCooling(), "Silindir", getCylinder());
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.MOTOR;
+    }
     private String type;
     private String cooling;
     private String cylinder;
