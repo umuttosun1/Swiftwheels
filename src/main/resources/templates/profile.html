@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Profilim')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('profile')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="sw-card p-4 text-center">
+        <span class="sw-avatar mx-auto mb-3" style="width:72px;height:72px;font-size:1.8rem;background:var(--sw-brand-soft)"
+              th:text="${me.firstName.substring(0,1)}">U</span>
+        <h1 class="h5 fw-bold mb-0" th:text="${me.fullName}">Ad Soyad</h1>
+        <p class="text-muted small mb-3" th:text="${me.email}">mail</p>
+        <span th:if="${me.admin}" class="badge bg-primary mb-3">Admin</span>
+        <dl class="text-start small mb-0">
+          <dt class="text-muted fw-semibold">Telefon</dt><dd th:text="${me.phoneNumber}">05..</dd>
+          <dt class="text-muted fw-semibold">Doğum tarihi</dt><dd th:text="${#temporals.format(me.birthDate, 'dd.MM.yyyy')}">01.01.2000</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <h2 class="h4 fw-bold mb-3">Kiralamalarım</h2>
+      <div th:if="${rentals.isEmpty()}" class="sw-card p-5 text-center">
+        <i class="bi bi-calendar2-x display-5 text-muted"></i>
+        <p class="text-muted mt-3">Henüz bir kiralaman yok.</p>
+        <a class="btn btn-primary" th:href="@{/cars}">Araçlara göz at</a>
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <div class="sw-card p-3 d-flex flex-wrap gap-3 align-items-center" th:each="r : ${rentals}">
+          <img th:if="${r.vehicle.hasImage()}" class="thumb" style="width:96px;height:64px" th:src="@{'/vehicles/' + ${r.vehicle.id} + '/image'}" alt="">
+          <div class="flex-grow-1">
+            <div class="fw-bold" th:text="${r.vehicle.title}">Model</div>
+            <div class="meta">
+              <span th:text="${#temporals.format(r.startDate, 'dd.MM.yyyy')}"></span> →
+              <span th:text="${#temporals.format(r.endDate, 'dd.MM.yyyy')}"></span>
+              · <span th:text="${r.days} + ' gün'"></span>
+              <span th:if="${r.insurance}"> · kasko dahil</span>
+            </div>
+          </div>
+          <div class="text-end">
+            <div class="price fs-5" th:text="${#numbers.formatInteger(r.totalPrice, 1, 'POINT')} + ' ₺'">0 ₺</div>
+            <span th:if="${r.overdue}" class="badge bg-danger">Gecikmede</span>
+            <span th:if="${r.active and !r.overdue}" class="badge bg-success">Kirada</span>
+            <span th:if="${r.status.name() == 'RETURNED'}" class="badge bg-secondary"
+                  th:text="'İade edildi · ' + ${#temporals.format(r.returnedAt, 'dd.MM.yyyy')}">İade</span>
+          </div>
+          <form th:if="${r.active}" th:action="@{'/rentals/' + ${r.id} + '/return'}" method="post"
+                onsubmit="return confirm('Araç iade edilsin mi?')">
+            <button class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-return-left"></i> İade et</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

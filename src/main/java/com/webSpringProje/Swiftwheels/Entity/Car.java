@@ -4,6 +4,16 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Car extends Vehicle {
+
+    @Override
+    public java.util.Map<String, String> getDetails() {
+        return details("Seri", getSeri(), "Yakıt", getFuel());
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.CAR;
+    }
     private String seri;
     private String fuel;
 

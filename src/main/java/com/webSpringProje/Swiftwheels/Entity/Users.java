@@ -15,7 +15,7 @@ public class Users {
     private String lastName;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private LocalDate birthDate;
@@ -37,6 +37,14 @@ public class Users {
         this.roles = roles;
     }
     public Users() {
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public boolean isAdmin() {
+        return roles.contains("ROLE_ADMIN");
     }
     public Long getId() {
         return id;

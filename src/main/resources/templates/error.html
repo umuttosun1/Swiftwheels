@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Hata')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('error')}"></nav>
+
+<main class="container py-5 text-center" style="max-width: 560px">
+  <div class="display-1 fw-bold text-brand" th:text="${status}">404</div>
+  <p class="lead" th:switch="${status}">
+    <span th:case="404" th:text="${message != null and message != 'No message available'} ? ${message} : 'Aradığınız sayfa bulunamadı.'">Sayfa bulunamadı.</span>
+    <span th:case="403">Bu sayfayı görmeye yetkiniz yok.</span>
+    <span th:case="*">Beklenmeyen bir hata oluştu.</span>
+  </p>
+  <a class="btn btn-primary" th:href="@{/homepage}">Ana sayfaya dön</a>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

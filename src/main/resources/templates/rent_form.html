@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${vehicle.title} + ' kirala')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar(${vehicle.vehicleType.path})}"></nav>
+
+<main class="container py-4" style="max-width: 980px">
+  <a class="small" th:href="@{'/' + ${vehicle.vehicleType.path} + '/' + ${vehicle.id}}"><i class="bi bi-arrow-left"></i> Araca dön</a>
+  <h1 class="h3 fw-bold mt-2 mb-4">Kiralama</h1>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <form class="sw-card p-4" th:action="@{'/rent/' + ${vehicle.id}}" th:object="${rentForm}" method="post" id="rent-form" novalidate>
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+          <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="startDate">Teslim alma</label>
+            <input id="startDate" type="date" class="form-control" th:field="*{startDate}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{startDate}"></div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="endDate">İade</label>
+            <input id="endDate" type="date" class="form-control" th:field="*{endDate}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{endDate}"></div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="address">Teslimat adresi</label>
+          <textarea id="address" rows="2" class="form-control" th:field="*{address}" th:errorclass="is-invalid" placeholder="Mahalle, cadde, no, ilçe/il"></textarea>
+          <div class="invalid-feedback" th:errors="*{address}"></div>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" th:field="*{insurance}" id="insurance">
+          <label class="form-check-label" for="insurance">
+            Kasko + sigorta paketi <span class="text-muted">(+<span th:text="${insuranceFee}">250</span> ₺, tek sefer)</span>
+          </label>
+        </div>
+
+        <details class="my-3 small text-muted">
+          <summary class="fw-semibold text-dark">Kiralama sözleşmesi</summary>
+          <ol class="mt-2 mb-0">
+            <li>Araç teslim alındığı durumda ve belirtilen iade tarihinde geri teslim edilir.</li>
+            <li>Ücret = günlük fiyat × gün sayısı; kasko + sigorta seçilirse sabit paket ücreti eklenir.</li>
+            <li>Trafik cezaları ve sigorta kapsamı dışındaki hasarlar kiracıya aittir.</li>
+            <li th:text="'En fazla ' + ${maxDays} + ' gün kiralanabilir; kiracının 18 yaşından büyük olması gerekir.'"></li>
+          </ol>
+        </details>
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" th:field="*{acceptTerms}" id="acceptTerms" th:errorclass="is-invalid">
+          <label class="form-check-label" for="acceptTerms">Sözleşmeyi okudum, kabul ediyorum</label>
+          <div class="invalid-feedback" th:errors="*{acceptTerms}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold" th:disabled="${vehicle.stock <= 0}">
+          <i class="bi bi-check2-circle me-1"></i> Kiralamayı onayla
+        </button>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="sw-card p-3 mb-3 d-flex gap-3 align-items-center">
+        <img th:if="${vehicle.hasImage()}" class="rounded bg-light" style="width:120px;height:80px;object-fit:contain"
+             th:src="@{'/vehicles/' + ${vehicle.id} + '/image'}" alt="">
+        <div>
+          <div class="fw-bold" th:text="${vehicle.title}">Model</div>
+          <div class="meta" th:text="${vehicle.year} + ' · ' + ${vehicle.color}">2022 · Gümüş</div>
+          <div class="price fs-5"><span th:text="${#numbers.formatInteger(vehicle.price, 1, 'POINT')}">1.200</span> ₺ <small>/ gün</small></div>
+        </div>
+      </div>
+      <div class="summary-box" id="summary" th:data-daily="${vehicle.price}" th:data-insurance="${insuranceFee}">
+        <div class="d-flex justify-content-between"><span>Gün</span><b id="s-days">–</b></div>
+        <div class="d-flex justify-content-between"><span>Araç ücreti</span><b id="s-base">–</b></div>
+        <div class="d-flex justify-content-between"><span>Kasko + sigorta</span><b id="s-ins">–</b></div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-end"><span>Toplam</span><span class="total" id="s-total">–</span></div>
+        <div class="small text-muted mt-1">Tutar onayda sunucuda yeniden hesaplanır.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+  (() => {
+    const box = document.getElementById('summary');
+    const daily = +box.dataset.daily, fee = +box.dataset.insurance;
+    const $ = (id) => document.getElementById(id);
+    const tl = (n) => n.toLocaleString('tr-TR') + ' ₺';
+    function update() {
+      const s = new Date($('startDate').value), e = new Date($('endDate').value);
+      const days = Math.round((e - s) / 86400000);
+      const ok = Number.isFinite(days) && days > 0;
+      const ins = $('insurance').checked ? fee : 0;
+      $('s-days').textContent = ok ? days : '–';
+      $('s-base').textContent = ok ? tl(days * daily) : '–';
+      $('s-ins').textContent = tl(ins);
+      $('s-total').textContent = ok ? tl(days * daily + ins) : '–';
+    }
+    ['startDate', 'endDate', 'insurance'].forEach((id) => $(id).addEventListener('input', update));
+    update();
+  })();
+</script>
+</body>
+</html>
